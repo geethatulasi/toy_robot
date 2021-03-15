@@ -12,14 +12,18 @@ class Api::RobotController < ApplicationController
         for i in 0...commands_length do
           if @robot_params[i].include?("PLACE")
             @row = i
-            assign_params
-            if !check_position_valid?
-              render json: { error:"Place commands are not valid"}
+            temp_params
+            binding.pry
+            if check_position_valid?
+              assign_params
+            else
+              render json:{error: "Place commands are not valid"}
             end
           else
-            # binding.pry
             if check_position_valid?
-                puts @robot_params[i]
+              # assign_params
+            # binding.pry
+                # puts @robot_params[i]
                 command = @robot_params[i]
                 # binding.pry
                 case command
@@ -41,21 +45,28 @@ class Api::RobotController < ApplicationController
         end
       end
 
-    # else
-    #   render json:{message: "Please send robot commands"}
+    else
+      render json:{message: "Please send robot commands"}
     end
   end
 
   private
 
+  def temp_params
+    @tem_x = @robot_params[@row][1]
+    @tem_y = @robot_params[@row][2]
+    @tem_f = @robot_params[@row][3]
+  end
+
   def assign_params
-    @x = @robot_params[@row][1]
-    @y = @robot_params[@row][2]
-    @f = @robot_params[@row][3]
+    @x = @tem_x
+    @y = @tem_y
+    @f = @tem_f
   end
 
   def check_position_valid?
-    if  @x >= 0 && @x <= @max_x && @y >= 0 && @y <= @max_y && @facings.include?(@f)
+    if  @tem_x > 0 && @tem_x <= @max_x && @tem_y > 0 && @tem_y <= @max_y && @facings.include?(@tem_f)
+    binding.pry
       return true
     else
       return false
